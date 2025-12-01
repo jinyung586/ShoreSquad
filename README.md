@@ -1,232 +1,146 @@
-# ShoreSquad 🌊
+# ShoreSquad 
 
-**Rally your crew, track weather, and hit the next beach cleanup with our dope map app!**
+**Rally your crew, track weather, and hit the next beach cleanup with ShoreSquad** - a modern, responsive web application for organizing and coordinating beach cleanup activities.
 
-## Project Overview
+##  Features
 
-ShoreSquad is a progressive web application (PWA) designed to mobilize young people to clean beaches. It combines interactive maps, real-time weather tracking, and social features to make eco-action fun and connected.
+### Core Features
+- ** Interactive Beach Map** - Explore beaches on an interactive map with real-time marker locations (Leaflet.js + OpenStreetMap)
+- ** Next Cleanup Tracker** - Google Maps embed showing your next cleanup location (Pasir Ris, Singapore: 1.381497, 103.955574)
+- ** Crew Management** - Create and join cleanup crews, track members and next scheduled cleanups
+- ** Real-time Weather** - Live weather data from NEA (National Environment Agency) via data.gov.sg
+- ** Impact Dashboard** - Track cleanups organized, volunteers involved, waste removed, and active crews
+- ** Fully Responsive** - Works seamlessly on desktop, tablet, and mobile devices
+- ** Accessible** - WCAG compliant with keyboard navigation and screen reader support
+- ** Robust Error Handling** - Try/catch blocks, loading spinners, user feedback
 
-### Key Features
-
-- 🗺️ **Interactive Beach Mapping** - Find nearby beaches and cleanup hotspots
-- 🌦️ **Weather Integration** - Real-time forecasts to plan perfect cleanup days
-- 👥 **Crew Management** - Create or join cleanup crews in your area
-- 📱 **Mobile-First** - Optimized for phones and tablets
-- 🚀 **PWA Capabilities** - Works offline with service workers
-- ♿ **Accessible** - WCAG 2.1 AA compliant for all users
-- ⚡ **Lightning Fast** - Lazy loading and optimized performance
-
-## Colour Palette
-
-Our design uses ocean and eco-inspired colours targeting young, environmentally conscious users:
-
-| Colour | Code | Usage |
-|--------|------|-------|
-| **Ocean Blue** | #0066CC | Primary brand, CTAs, headings |
-| **Teal** | #00B4A6 | Secondary accent, interactive elements |
-| **Lime Green** | #7FD426 | Eco-action highlight, energy |
-| **Sandy Beige** | #F4E4C1 | Warmth, approachability |
-| **Dark Charcoal** | #2C3E50 | Text, contrast, footer |
-| **Off-White** | #FAFAFA | Background, cleanliness |
-
-## JavaScript Features
-
-### Interactivity
-- **Geolocation API** - Auto-detect user location for nearby beaches
-- **Event Listeners** - Smooth navigation, form handling, modal interactions
-- **DOM Manipulation** - Dynamic rendering of beaches, crews, weather data
-- **State Management** - LocalStorage for offline data persistence
-
-### Performance
-- **Debouncing** - Efficient search input handling
-- **Lazy Loading** - Intersection Observer for images and content
-- **Service Workers** - Offline support and faster load times
-- **IndexedDB Ready** - Structure for advanced data caching
-
-### APIs Integration Ready
-- **Fetch API** - Weather data from OpenWeatherMap (implementation ready)
-- **Leaflet.js** - Interactive maps (can be integrated)
-- **Web Notifications** - Event reminders and alerts
-- **LocalStorage & IndexedDB** - Offline-first architecture
-
-## UX Design Principles
-
-1. **Mobile-First Design** - Primary experience optimized for phones
-2. **Accessibility (WCAG 2.1 AA)**
-   - Semantic HTML structure
-   - ARIA labels for screen readers
-   - Sufficient colour contrast (4.5:1 minimum)
-   - Keyboard navigation support
-   - Focus indicators for all interactive elements
-
-3. **User-Centric Features**
-   - Clear call-to-action buttons
-   - Intuitive crew management
-   - One-click location detection
-   - Social proof (crew size, cleanup stats)
-
-4. **Visual Hierarchy**
-   - Bold typography for headings
-   - Consistent spacing and alignment
-   - Distinct button styles
-   - Card-based layout for content
-
-5. **Performance & Speed**
-   - Minimal dependencies
-   - Optimized CSS (variables, grid layouts)
-   - Progressive enhancement
-   - Prefers-reduced-motion support
-
-6. **Micro-interactions**
-   - Button hover effects
-   - Smooth scrolling
-   - Toast notifications
-   - Loading states
-
-## Project Structure
-
-```
-ShoreSquad/
-├── index.html          # HTML5 boilerplate with semantic markup
-├── css/
-│   └── styles.css      # Complete responsive styles with accessibility
-├── js/
-│   └── app.js          # Interactive features and app logic
-├── manifest.json       # PWA manifest for installability
-├── .gitignore          # Git configuration
-├── .vscode/
-│   └── settings.json   # Live Server and editor configuration
-└── README.md           # This file
-```
-
-## Getting Started
+##  Quick Start
 
 ### Prerequisites
 - Modern web browser (Chrome, Firefox, Safari, Edge)
-- VS Code with Live Server extension (recommended)
-- Git for version control
+- No server setup required!
 
-### Installation
+### Run Locally
 
-1. **Clone or open the project:**
-   ```bash
-   cd ShoreSquad
-   ```
+**Option A: VS Code Live Server (Recommended)**
+- Install "Live Server" extension by Ritwick Dey
+- Right-click index.html  "Open with Live Server"
+- Browser opens at http://127.0.0.1:5500
 
-2. **Start Live Server:**
-   - Open `index.html` in VS Code
-   - Click "Go Live" in the bottom right corner
-   - Browser opens at `http://localhost:5500`
+**Option B: Python**
+\\\ash
+python -m http.server 8000
+\\\
+Then visit http://localhost:8000
 
-3. **Or use any HTTP server:**
-   ```bash
-   # Python 3
-   python -m http.server 8000
-   
-   # Python 2
-   python -m SimpleHTTPServer 8000
-   
-   # Node.js
-   npx http-server
-   ```
+**Option C: Node.js**
+\\\ash
+npm install -g http-server
+http-server
+\\\
 
-### Development Workflow
+##  Usage Guide
 
-1. Edit files in your preferred editor
-2. Live Server automatically refreshes on save
-3. Check console (F12) for any errors
-4. Test on mobile devices using local IP
+### Main Features
+1. **Find Your Beach** - Search beaches or use location detection
+2. **Interactive Map** - Click markers for details and scheduling
+3. **Join a Crew** - Create or join cleanup crews
+4. **Weather** - Real-time conditions from 4 NEA stations
+5. **Next Cleanup** - Pasir Ris beach location on Google Map
+6. **Impact** - Track collective cleanup statistics
 
-## Browser Support
+### Creating a Crew
+1. Click "Create Crew" button
+2. Enter crew name, location, target size
+3. You become the first member
+4. Invite friends to grow your crew
 
-| Browser | Support |
-|---------|---------|
-| Chrome 90+ | ✅ Full |
-| Firefox 88+ | ✅ Full |
-| Safari 14+ | ✅ Full |
-| Edge 90+ | ✅ Full |
-| Mobile browsers | ✅ Full |
+##  Technical Stack
 
-## Features Roadmap
+- **Frontend:** HTML5, CSS3, Vanilla JavaScript (ES6+)
+- **Mapping:** Leaflet.js v1.9.4 + OpenStreetMap
+- **Weather API:** NEA Real-time Weather Readings (data.gov.sg)
+- **Storage:** Browser LocalStorage
+- **No build process needed** - pure static site
 
-### Phase 1 (Current)
-- ✅ Beach discovery
-- ✅ Crew management
-- ✅ Weather forecast
-- ✅ Impact statistics
+##  Error Handling
 
-### Phase 2 (Planned)
-- 🔄 Real Leaflet.js maps integration
-- 🔄 OpenWeatherMap API integration
-- 🔄 User authentication
-- 🔄 Event scheduling system
-- 🔄 Photo gallery for cleanup events
+- Try/Catch wrapped functions
+- Loading spinners during API calls
+- Graceful fallbacks for failed APIs
+- User feedback via toast notifications
+- Console logging for debugging
 
-### Phase 3 (Future)
-- 🔄 Social sharing features
-- 🔄 Achievement badges
-- 🔄 Leaderboards
-- 🔄 Push notifications
-- 🔄 Backend database integration
+##  Responsive Design
 
-## Git Configuration
+- **Desktop:** Full multi-column layouts
+- **Tablet:** 2-column optimized view
+- **Mobile:** Single-column, touch-friendly
 
-The project includes a `.gitignore` file configured for:
-- Node modules and dependencies
-- OS files (.DS_Store, Thumbs.db)
-- IDE configuration files
-- Build artifacts and logs
-- Environment files (.env)
+##  Browser Support
 
-### Initial Git Setup
+- Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
 
-```bash
-git init
-git add .
-git commit -m "Initial ShoreSquad project setup"
-git branch -M main
-git remote add origin <your-repo-url>
-git push -u origin main
-```
+##  Accessibility (WCAG 2.1 Level AA)
 
-## Accessibility Features
+- Semantic HTML with ARIA labels
+- Full keyboard navigation
+- High contrast colors (4.5:1 ratio)
+- Focus indicators on all interactive elements
+- Screen reader support
 
-- **Semantic HTML** - Proper use of `<nav>`, `<main>`, `<section>`, `<article>`
-- **ARIA Labels** - `aria-label`, `aria-labelledby`, `aria-hidden` attributes
-- **Keyboard Navigation** - All interactive elements accessible via keyboard
-- **Focus Management** - Visible focus indicators on all buttons and links
-- **Colour Contrast** - 4.5:1 minimum ratio for readability
-- **Reduced Motion** - Respects `prefers-reduced-motion` user preference
+##  Data Privacy
 
-## Performance Metrics
+- All data stored locally in browser
+- No tracking or analytics scripts
+- No user login required
+- Connects only to public government APIs
+- No data sent to external servers
 
-- **Lighthouse Score Target:** 90+
-- **Page Load Time:** < 2 seconds
-- **First Contentful Paint:** < 1 second
-- **Mobile Friendly:** 100% responsive
+##  Deployment
 
-## Contributing
+### GitHub Pages (Free & Easy)
 
-1. Create a feature branch: `git checkout -b feature/your-feature`
-2. Commit changes: `git commit -m "Add your feature"`
-3. Push to branch: `git push origin feature/your-feature`
-4. Open a Pull Request
+1. Go to Repository Settings  Pages
+2. Source: Deploy from a branch
+3. Branch: main, Folder: / (root)
+4. Click "Save"
 
-## License
+Access at: https://jinyung586.github.io/ShoreSquad
 
-MIT License - Feel free to use this project for educational and commercial purposes.
+Auto-updates on every push to main!
 
-## Support
+##  Contributing
 
-For issues or questions:
-- 📧 Email: hello@shorecrew.app
-- 🐛 GitHub Issues: [Report a bug](https://github.com/shorecrew/app/issues)
-- 💬 Community: [Join our Discord](https://discord.gg/shorecrew)
+1. Fork the repository
+2. Create feature branch: git checkout -b feature/amazing-feature
+3. Commit: git commit -m 'Add feature'
+4. Push: git push origin feature/amazing-feature
+5. Open Pull Request
 
-## Team & Credits
+##  License
 
-Built with 🌊 and passion for clean oceans by the ShoreSquad team.
+MIT License - Use freely for any purpose
+
+##  Credits
+
+- Leaflet.js team for mapping library
+- OpenStreetMap contributors
+- NEA for real-time weather data
+- data.gov.sg for public APIs
+- Google Maps for cleanup location embed
+
+##  Support
+
+- Report bugs: GitHub Issues
+- Questions: Check console (F12) for errors
+- Cache issues: Clear browsing data
+
+##  About ShoreSquad
+
+Making beach cleanup easy and impactful. We empower volunteers to keep beaches clean through technology and community.
+
+**Let's keep our beaches clean, together! **
 
 ---
-
-**Let's keep our beaches clean together! 🏖️♻️**
+**Version:** 1.0.0 | **Status:** Live & Maintained | **Last Updated:** December 2025

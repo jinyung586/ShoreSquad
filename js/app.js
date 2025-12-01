@@ -138,39 +138,52 @@ function initHero() {
  */
 
 function initBeaches() {
-    const searchInput = document.getElementById('searchInput');
-    const locationBtn = document.getElementById('locationBtn');
-    
-    // Search beaches
-    searchInput?.addEventListener('input', debounce(() => {
-        filterBeaches();
-    }, 300));
-    
-    // Get user location
-    locationBtn?.addEventListener('click', () => {
-        if (navigator.geolocation) {
-            locationBtn.disabled = true;
-            locationBtn.textContent = '📍 Locating...';
-            
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    showToast('📍 Location detected! Showing nearby beaches.', 'success');
-                    locationBtn.disabled = false;
-                    locationBtn.textContent = '📍 Use My Location';
-                    // In a real app, filter beaches by coordinates
-                    renderBeaches();
-                },
-                (error) => {
-                    showToast('❌ Unable to access location. Please enable location permissions.', 'error');
-                    locationBtn.disabled = false;
-                    locationBtn.textContent = '📍 Use My Location';
+    try {
+        const searchInput = document.getElementById('searchInput');
+        const locationBtn = document.getElementById('locationBtn');
+        
+        // Search beaches
+        searchInput?.addEventListener('input', debounce(() => {
+            try {
+                filterBeaches();
+            } catch (error) {
+                console.error('Error filtering beaches:', error);
+            }
+        }, 300));
+        
+        // Get user location
+        locationBtn?.addEventListener('click', () => {
+            try {
+                if (navigator.geolocation) {
+                    locationBtn.disabled = true;
+                    locationBtn.textContent = '📍 Locating...';
+                    
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            showToast('📍 Location detected! Showing nearby beaches.', 'success');
+                            locationBtn.disabled = false;
+                            locationBtn.textContent = '📍 Use My Location';
+                            renderBeaches();
+                        },
+                        (error) => {
+                            showToast('❌ Unable to access location. Please enable location permissions.', 'error');
+                            locationBtn.disabled = false;
+                            locationBtn.textContent = '📍 Use My Location';
+                        }
+                    );
                 }
-            );
-        }
-    });
-    
-    renderBeaches();
-    initMap();
+            } catch (error) {
+                console.error('Error getting location:', error);
+                showToast('❌ Error accessing location services', 'error');
+            }
+        });
+        
+        renderBeaches();
+        initMap();
+    } catch (error) {
+        console.error('Error initializing beaches:', error);
+        showToast('❌ Error loading beaches section', 'error');
+    }
 }
 
 function renderBeaches() {
@@ -216,21 +229,102 @@ function selectBeach(beachId) {
 }
 
 function initMap() {
-    const mapContainer = document.getElementById('beachesMap');
-    
-    if (!mapContainer) return;
-    
-    // Create a simple visual map (in production, use Leaflet.js)
-    mapContainer.innerHTML = `
-        <div style="padding: 20px; display: flex; align-items: center; justify-content: center; height: 100%; background: linear-gradient(135deg, #00B4A6, #7FD426); color: white; text-align: center;">
-            <div>
-                <div style="font-size: 3rem; margin-bottom: 10px;">🗺️</div>
-                <p><strong>Interactive map would load here</strong></p>
-                <p style="font-size: 0.9rem; margin-top: 10px;">In production: Use Leaflet.js + OpenStreetMap API</p>
-                <p style="font-size: 0.9rem;">Features: Click to view beach details, weather overlay, crew locations</p>
-            </div>
-        </div>
-    `;
+    try {
+        const mapContainer = document.getElementById('beachesMap');
+        
+        if (!mapContainer) {
+            console.warn('Map container not found');
+            return;
+        }
+        
+        // Clear the container
+        mapContainer.innerHTML = '';
+        mapContainer.style.height = '400px';
+        
+        // Initialize Leaflet map - centered on Singapore
+        const map = L.map('beachesMap').setView([1.3521, 103.8198], 11);
+        
+        // Add OpenStreetMap tiles with error handling
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19,
+            errorTileUrl: 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"><rect fill="%23f0f0f0" width="256" height="256"/><text x="50%25" y="50%25" text-anchor="middle" dominant-baseline="middle" font-size="14" fill="%23999">Tile Load Error</text></svg>'
+        }).addTo(map);
+        
+        // Get beaches from localStorage
+        const beaches = JSON.parse(localStorage.getItem('shorecrew_beaches') || '[]');
+        
+        // Define actual beach coordinates in Singapore area
+        const beachCoordinates = {
+            1: { lat: 1.3521, lng: 103.8198, name: 'Santa Monica Beach' },
+            2: { lat: 1.3624, lng: 103.7995, name: 'Malibu Beach' },
+            3: { lat: 1.3044, lng: 103.8063, name: 'Venice Beach' },
+            4: { lat: 1.4082, lng: 103.7618, name: 'Long Beach' },
+        };
+        
+        // Add markers for each beach
+        beaches.forEach(beach => {
+            try {
+                const coords = beachCoordinates[beach.id] || { lat: 1.3521, lng: 103.8198 };
+                
+                const marker = L.marker([coords.lat, coords.lng], {
+                    title: beach.name,
+                    icon: L.icon({
+                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowSize: [41, 41]
+                    })
+                }).addTo(map);
+                
+                // Create popup content
+                const popupContent = `
+                    <div style="font-weight: bold; margin-bottom: 8px;">${beach.name}</div>
+                    <div style="font-size: 0.9rem; margin-bottom: 8px;">📍 ${beach.location}</div>
+                    <div style="font-size: 0.9rem; margin-bottom: 8px;">⭐ ${beach.difficulty}</div>
+                    <div style="font-size: 0.9rem; margin-bottom: 10px;">Recent cleanups: ${beach.cleanups}</div>
+                    <button onclick="selectBeach(${beach.id})" style="padding: 6px 12px; background-color: #0066CC; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">Schedule Cleanup</button>
+                `;
+                
+                marker.bindPopup(popupContent);
+            } catch (error) {
+                console.error(`Error adding marker for ${beach.name}:`, error);
+            }
+        });
+        
+        // Add Pasir Ris cleanup location marker
+        try {
+            const pasirRisMarker = L.marker([1.381497, 103.955574], {
+                title: 'Next Cleanup - Pasir Ris',
+                icon: L.icon({
+                    iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowSize: [41, 41]
+                })
+            }).addTo(map);
+            
+            pasirRisMarker.bindPopup(`
+                <div style="font-weight: bold; margin-bottom: 8px; color: #D32F2F;">🎯 Next Cleanup Location</div>
+                <div style="font-size: 0.9rem; margin-bottom: 8px;">Pasir Ris, Singapore</div>
+                <div style="font-size: 0.9rem; margin-bottom: 8px;">📍 1.381497, 103.955574</div>
+                <div style="font-size: 0.9rem; margin-bottom: 10px;">🏷️ Street View Asia</div>
+                <button onclick="selectBeach(0)" style="padding: 6px 12px; background-color: #D32F2F; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">Register for Cleanup</button>
+            `);
+            
+            // Open Pasir Ris popup by default
+            pasirRisMarker.openPopup();
+        } catch (error) {
+            console.error('Error adding Pasir Ris marker:', error);
+        }
+    } catch (error) {
+        console.error('Error initializing map:', error);
+        showToast('⚠️ Map failed to load. Some features may be unavailable.', 'warning');
+    }
 }
 
 /**
@@ -351,30 +445,194 @@ function viewCrew(crewId) {
  */
 
 function initWeather() {
-    renderWeather();
+    fetchNEAWeather();
+    // Refresh weather data every 30 minutes
+    setInterval(fetchNEAWeather, 30 * 60 * 1000);
 }
 
-function renderWeather() {
+/**
+ * Fetch real-time weather data from NEA API (data.gov.sg)
+ */
+function fetchNEAWeather() {
     const weatherContainer = document.getElementById('weatherContainer');
-    const weatherData = [
-        { day: 'Mon', temp: 72, condition: 'Sunny', icon: '☀️', wind: '10 mph', humidity: '65%' },
-        { day: 'Tue', temp: 68, condition: 'Cloudy', icon: '☁️', wind: '15 mph', humidity: '70%' },
-        { day: 'Wed', temp: 70, condition: 'Partly Cloudy', icon: '⛅', wind: '12 mph', humidity: '68%' },
-        { day: 'Thu', temp: 65, condition: 'Rainy', icon: '🌧️', wind: '20 mph', humidity: '85%' },
-    ];
     
-    weatherContainer.innerHTML = weatherData.map(data => `
-        <div class="weather-card">
-            <div class="weather-icon">${data.icon}</div>
-            <div class="weather-day" style="font-weight: 600; margin-bottom: 8px;">${data.day}</div>
-            <div class="weather-temp">${data.temp}°F</div>
-            <div class="weather-condition">${data.condition}</div>
-            <div class="weather-details">
-                <div>💨 ${data.wind}</div>
-                <div>💧 ${data.humidity}</div>
+    try {
+        // Show loading state
+        weatherContainer.innerHTML = '<div class="loading-container"><div class="spinner"></div><span>Loading weather data...</span></div>';
+        
+        Promise.all([
+            fetch('https://api.data.gov.sg/v1/environment/air-temperature')
+                .then(res => {
+                    if (!res.ok) throw new Error(`Temperature API failed: ${res.status}`);
+                    return res.json();
+                }),
+            fetch('https://api.data.gov.sg/v1/environment/relative-humidity')
+                .then(res => {
+                    if (!res.ok) throw new Error(`Humidity API failed: ${res.status}`);
+                    return res.json();
+                }),
+            fetch('https://api.data.gov.sg/v1/environment/wind-speed')
+                .then(res => {
+                    if (!res.ok) throw new Error(`Wind API failed: ${res.status}`);
+                    return res.json();
+                })
+        ])
+        .then(([tempData, humidityData, windData]) => {
+            renderNEAWeather(tempData, humidityData, windData);
+        })
+        .catch(error => {
+            console.error('Error fetching weather:', error);
+            showToast('⚠️ Unable to load real-time weather. Showing default forecast.', 'warning');
+            renderDefaultWeather();
+        });
+    } catch (error) {
+        console.error('Weather initialization error:', error);
+        showToast('❌ Error loading weather section', 'error');
+        renderDefaultWeather();
+    }
+}
+
+/**
+ * Render weather data from NEA API
+ */
+function renderNEAWeather(tempData, humidityData, windData) {
+    try {
+        const weatherContainer = document.getElementById('weatherContainer');
+        
+        // Extract station data and get current readings
+        const tempStations = tempData.metadata?.stations || [];
+        const humidityStations = humidityData.metadata?.stations || [];
+        const windStations = windData.metadata?.stations || [];
+        
+        // Get readings from the last data point
+        const latestTemp = tempData.items?.[0]?.readings || [];
+        const latestHumidity = humidityData.items?.[0]?.readings || [];
+        const latestWind = windData.items?.[0]?.readings || [];
+        
+        // Create a consolidated view of available data
+        const stations = new Map();
+        
+        latestTemp.forEach(reading => {
+            if (!stations.has(reading.station_id)) {
+                stations.set(reading.station_id, {});
+            }
+            stations.get(reading.station_id).temp = reading.value;
+        });
+        
+        latestHumidity.forEach(reading => {
+            if (!stations.has(reading.station_id)) {
+                stations.set(reading.station_id, {});
+            }
+            stations.get(reading.station_id).humidity = reading.value;
+        });
+        
+        latestWind.forEach(reading => {
+            if (!stations.has(reading.station_id)) {
+                stations.set(reading.station_id, {});
+            }
+            stations.get(reading.station_id).wind = reading.value;
+        });
+        
+        // Get station names
+        const stationNames = new Map();
+        tempStations.forEach(station => {
+            stationNames.set(station.id, station.name);
+        });
+        
+        // Display top 4 stations with data
+        let displayCount = 0;
+        const weatherCards = [];
+        
+        stations.forEach((data, stationId) => {
+            if (displayCount >= 4) return;
+            
+            const stationName = stationNames.get(stationId) || `Station ${stationId}`;
+            const temp = data.temp || 'N/A';
+            const humidity = data.humidity || 'N/A';
+            const wind = data.wind || 'N/A';
+            
+            // Determine weather icon based on conditions
+            let icon = '🌤️';
+            let condition = 'Partly Cloudy';
+            
+            if (humidity > 80) {
+                icon = '🌧️';
+                condition = 'Humid/Rainy';
+            } else if (humidity > 70) {
+                icon = '☁️';
+                condition = 'Cloudy';
+            } else if (temp > 30) {
+                icon = '☀️';
+                condition = 'Sunny & Warm';
+            }
+            
+            const tempC = typeof temp === 'number' ? temp.toFixed(1) : temp;
+            const humidityPct = typeof humidity === 'number' ? humidity.toFixed(0) : humidity;
+            const windSpeed = typeof wind === 'number' ? wind.toFixed(1) : wind;
+            
+            weatherCards.push(`
+                <div class="weather-card">
+                    <div class="weather-icon">${icon}</div>
+                    <div class="weather-day" style="font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${stationName}</div>
+                    <div class="weather-temp">${tempC}°C</div>
+                    <div class="weather-condition">${condition}</div>
+                    <div class="weather-details">
+                        <div>💨 ${windSpeed} m/s</div>
+                        <div>💧 ${humidityPct}%</div>
+                    </div>
+                </div>
+            `);
+            
+            displayCount++;
+        });
+        
+        if (weatherCards.length === 0) {
+            renderDefaultWeather();
+            return;
+        }
+        
+        weatherContainer.innerHTML = weatherCards.join('');
+        
+        // Add attribution
+        const attribution = document.createElement('div');
+        attribution.style.cssText = 'grid-column: 1/-1; text-align: center; font-size: 0.8rem; color: #666; margin-top: 10px; padding-top: 10px; border-top: 1px solid #eee;';
+        attribution.innerHTML = 'Data source: NEA (National Environment Agency) via <a href="https://data.gov.sg" target="_blank" rel="noopener">data.gov.sg</a>';
+        weatherContainer.appendChild(attribution);
+    } catch (error) {
+        console.error('Error rendering weather:', error);
+        showToast('❌ Error processing weather data', 'error');
+        renderDefaultWeather();
+    }
+}
+
+/**
+ * Fallback weather display
+ */
+function renderDefaultWeather() {
+    try {
+        const weatherContainer = document.getElementById('weatherContainer');
+        const weatherData = [
+            { day: 'Today', temp: '28-30', condition: 'Partly Cloudy', icon: '⛅', wind: '10 m/s', humidity: '70%' },
+            { day: 'Tomorrow', temp: '27-29', condition: 'Cloudy', icon: '☁️', wind: '12 m/s', humidity: '75%' },
+            { day: 'Day 3', temp: '26-28', condition: 'Rainy', icon: '🌧️', wind: '15 m/s', humidity: '85%' },
+            { day: 'Day 4', temp: '27-30', condition: 'Sunny', icon: '☀️', wind: '8 m/s', humidity: '65%' },
+        ];
+        
+        weatherContainer.innerHTML = weatherData.map(data => `
+            <div class="weather-card">
+                <div class="weather-icon">${data.icon}</div>
+                <div class="weather-day" style="font-weight: 600; margin-bottom: 8px;">${data.day}</div>
+                <div class="weather-temp">${data.temp}°C</div>
+                <div class="weather-condition">${data.condition}</div>
+                <div class="weather-details">
+                    <div>💨 ${data.wind}</div>
+                    <div>💧 ${data.humidity}</div>
+                </div>
             </div>
-        </div>
-    `).join('');
+        `).join('');
+    } catch (error) {
+        console.error('Error rendering default weather:', error);
+    }
 }
 
 /**
@@ -446,31 +704,36 @@ function registerServiceWorker() {
  * Initialize all app features
  */
 function initApp() {
-    console.log('🌊 ShoreSquad App Initializing...');
-    
-    // Initialize data
-    initLocalStorage();
-    
-    // Initialize UI components
-    initNavbar();
-    initHero();
-    initBeaches();
-    initCrews();
-    initWeather();
-    initStats();
-    
-    // Initialize performance features
-    initLazyLoading();
-    registerServiceWorker();
-    
-    // Accessibility: Skip to main content
-    document.addEventListener('keydown', (e) => {
-        if (e.altKey && e.key === 'm') {
-            document.querySelector('main')?.focus();
-        }
-    });
-    
-    console.log('✅ ShoreSquad App Ready!');
+    try {
+        console.log('🌊 ShoreSquad App Initializing...');
+        
+        // Initialize data
+        initLocalStorage();
+        
+        // Initialize UI components
+        initNavbar();
+        initHero();
+        initBeaches();
+        initCrews();
+        initWeather();
+        initStats();
+        
+        // Initialize performance features
+        initLazyLoading();
+        registerServiceWorker();
+        
+        // Accessibility: Skip to main content
+        document.addEventListener('keydown', (e) => {
+            if (e.altKey && e.key === 'm') {
+                document.querySelector('main')?.focus();
+            }
+        });
+        
+        console.log('✅ ShoreSquad App Ready!');
+    } catch (error) {
+        console.error('Critical error during app initialization:', error);
+        showToast('❌ Error initializing app. Some features may not work.', 'error');
+    }
 }
 
 // Start app when DOM is loaded
