@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Rally your crew, track weather, and hit the next beach cleanup with ShoreSquad">
+    <meta name="theme-color" content="#0066CC">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <title>ShoreSquad - Beach Cleanup Movement</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%230066CC' width='180' height='180'/><text x='50%' y='50%' font-size='80' font-weight='bold' fill='%23FFF' text-anchor='middle' dominant-baseline='central'>SQ</text></svg>">
+</head>
+<body>
+    <nav class="navbar" role="navigation" aria-label="Main navigation">
+        <div class="navbar-container">
+            <div class="navbar-logo">
+                <span class="logo-icon">🌊</span>
+                <span class="logo-text">ShoreSquad</span>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#home" class="nav-link active">Home</a></li>
+                <li><a href="#beaches" class="nav-link">Beaches</a></li>
+                <li><a href="#crews" class="nav-link">Crews</a></li>
+                <li><a href="#weather" class="nav-link">Weather</a></li>
+            </ul>
+            <button class="hamburger" id="hamburger" aria-label="Toggle navigation menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <h1>Rally Your Crew</h1>
+                <p class="tagline">Track weather • Find beaches • Make impact</p>
+                <button class="btn btn-primary" id="getCTABtn" aria-label="Get started with ShoreSquad">
+                    Start a Cleanup 🏖️
+                </button>
+            </div>
+            <div class="hero-visual">
+                <div class="wave-animation"></div>
+            </div>
+        </section>
+
+        <!-- Beaches Section -->
+        <section id="beaches" class="section beaches-section" aria-labelledby="beaches-title">
+            <h2 id="beaches-title">Find Your Beach</h2>
+            <div class="search-container">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    class="search-input" 
+                    placeholder="Search beaches near you..."
+                    aria-label="Search for beaches"
+                >
+                <button class="btn btn-secondary" id="locationBtn" aria-label="Use my current location">
+                    📍 Use My Location
+                </button>
+            </div>
+            <div id="beachesMap" class="map-container" role="region" aria-label="Beach locations map"></div>
+            <div id="beachesList" class="beaches-list" role="list"></div>
+        </section>
+
+        <!-- Crews Section -->
+        <section id="crews" class="section crews-section" aria-labelledby="crews-title">
+            <h2 id="crews-title">Join a Crew</h2>
+            <div class="crews-grid" id="crewsList" role="list"></div>
+            <button class="btn btn-primary" id="createCrewBtn" aria-label="Create a new cleanup crew">
+                + Create Crew
+            </button>
+        </section>
+
+        <!-- Weather Section -->
+        <section id="weather" class="section weather-section" aria-labelledby="weather-title">
+            <h2 id="weather-title">Weather Forecast</h2>
+            <div id="weatherContainer" class="weather-grid" role="region" aria-label="Weather forecast"></div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="section stats-section">
+            <h2>Impact Dashboard</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="cleanupCount">0</div>
+                    <div class="stat-label">Cleanups Organized</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="volunteerCount">0</div>
+                    <div class="stat-label">People Involved</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="trashCount">0</div>
+                    <div class="stat-label">Kg Removed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="crewCount">0</div>
+                    <div class="stat-label">Active Crews</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+        <div class="footer-content">
+            <p>&copy; 2025 ShoreSquad. Keeping beaches clean together.</p>
+            <ul class="footer-links">
+                <li><a href="#about" aria-label="About ShoreSquad">About</a></li>
+                <li><a href="#contact" aria-label="Contact us">Contact</a></li>
+                <li><a href="#privacy" aria-label="Privacy policy">Privacy</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <!-- Modal for Creating/Joining Crew -->
+    <div id="crewModal" class="modal" role="dialog" aria-hidden="true" aria-labelledby="crewModalTitle">
+        <div class="modal-content">
+            <button class="modal-close" id="closeModalBtn" aria-label="Close dialog">×</button>
+            <h3 id="crewModalTitle">Join or Create Crew</h3>
+            <form id="crewForm">
+                <div class="form-group">
+                    <label for="crewName">Crew Name:</label>
+                    <input type="text" id="crewName" placeholder="e.g., Beach Warriors" required aria-label="Name of the crew">
+                </div>
+                <div class="form-group">
+                    <label for="crewLocation">Location:</label>
+                    <input type="text" id="crewLocation" placeholder="e.g., Santa Monica Beach" required aria-label="Crew location">
+                </div>
+                <div class="form-group">
+                    <label for="crewSize">Target Size:</label>
+                    <input type="number" id="crewSize" min="2" max="100" placeholder="5" required aria-label="Target crew size">
+                </div>
+                <button type="submit" class="btn btn-primary" aria-label="Create or join crew">Create Crew</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
